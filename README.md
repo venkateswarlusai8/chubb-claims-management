@@ -11,6 +11,8 @@ Take-home assessment: a claims platform where **claimants** report incidents, tr
 
 Prerequisites: .NET SDK 8+ (8.0 runtime) and Node 18+.
 
+On Windows, clone into a short path or enable long paths (`git clone -c core.longpaths=true …`). The EF migration file names are long enough to fail checkout in deep folders, and the API then starts with no tables.
+
 ```bash
 # 1. API on http://localhost:5080 (Swagger at /swagger). Creates claims.db and seeds demo data on first run.
 cd backend/Claims.Api
