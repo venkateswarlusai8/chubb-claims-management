@@ -110,7 +110,7 @@ The modules already talk through **events** where it matters: Notifications neve
 
 The **backend owns the contract**:
 - C# records in `Contracts/Contracts.cs`, published as OpenAPI (`/swagger`).
-- `frontend/src/app/core/models.ts` mirrors it by hand today. Next step: generate it from OpenAPI in CI, so drift fails the build.
+- `frontend/claims-ui/src/app/core/models.ts` mirrors it by hand today. Next step: generate it from OpenAPI in CI, so drift fails the build.
 
 Conventions:
 - Enums are serialised as strings.
