@@ -1,0 +1,22 @@
+# .NET
+bin/
+obj/
+.vs/
+*.user
+TestResults/
+
+# SQLite data files
+*.db
+*.db-shm
+*.db-wal
+
+# Angular / Node
+node_modules/
+dist/
+.angular/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
