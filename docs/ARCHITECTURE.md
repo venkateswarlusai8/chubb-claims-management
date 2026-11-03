@@ -2,7 +2,7 @@
 
 ## 1. Scope and prioritisation
 
-The brief says to start with the backend and that a strong backend beats a rushed attempt at both tiers. Time went roughly 65% backend, 25% frontend and 10% docs/tests wiring.
+The brief says to start with the backend and that a strong backend beats a rushed attempt at both tiers. The code reflects that weighting: about 1,940 lines of backend C# plus 510 lines of tests, against about 1,550 lines of Angular (excluding generated migrations), so roughly 60% of the code is backend and tests.
 
 **Built**
 - Claim lifecycle with server-enforced state machine, ownership and assignment rules
@@ -61,6 +61,26 @@ The six markets (SG, AU, HK, MY, TH, NZ) with their currencies are static refere
 
 One deployable ASP.NET Core service with clear modules:
 
+```mermaid
+flowchart LR
+    UI["Angular app<br/>claimant + officer areas"] -- "REST /api (X-Demo-User)" --> API
+    subgraph API["Claims.Api (one deployable)"]
+        C["Claims<br/>ClaimService + Claim aggregate"]
+        R["Reporting<br/>DashboardService"]
+        N["Notifications<br/>NotificationEventHandler"]
+        OP["OutboxProcessor<br/>(1s poll)"]
+    end
+    C -- "state + OutboxMessage<br/>one transaction" --> DB[("SQLite")]
+    R -- reads --> DB
+    OP -- reads outbox --> DB
+    OP -- "InProcess (default)" --> N
+    OP -. "Kafka (config switch)" .-> K[["claims.claim-events.v1"]]
+    K -. "consumer group<br/>claims-notifications" .-> N
+    N -- "Notification rows,<br/>ProcessedEvents" --> DB
+```
+
+Dotted lines are the Kafka path, which is configured but has not been run against a broker (see §4).
+
 | Module | Responsibility | Code |
 |---|---|---|
 | Claims | lifecycle commands and queries | `Domain/`, `Services/ClaimService.cs`, `ClaimsController` |
@@ -90,6 +110,7 @@ The modules already talk through **events** where it matters: Notifications neve
 - **Transport is configuration:** `Messaging:Transport = InProcess` (default, zero infrastructure) or `Kafka`. With Kafka, events go to `claims.claim-events.v1`, **keyed by ClaimId** so each claim's events stay ordered on one partition. The producer runs with idempotence and `acks=all`. A consumer group (`claims-notifications`) runs the same handlers.
 - **At-least-once delivery, idempotent consumers:** handlers record `(EventId, Consumer)` in `ProcessedEvents` and skip duplicates.
 - Kafka is optional rather than required because Docker isn't installed on the development machine, and the brief requires something that "can be started locally". `docker-compose.kafka.yml` gives the panel the real broker path.
+- **Verification status:** the in-process transport, the outbox and the idempotent handler are covered by tests. The Kafka producer and consumer compile and are wired by configuration, but **have not been run against a real broker**, and no test covers them. The first next step is a Testcontainers integration test.
 
 **Async on the frontend.** Claim progress happens when the *other* party acts, so:
 - The UI polls: the notification count every 10s, and an open claim every 10s.
@@ -171,11 +192,12 @@ The response includes a `basis` string so the number is never shown without its 
 - Optimistic concurrency uses a `Version` token, and a race returns 409 `concurrency_conflict`.
 
 **Next steps, in rough priority order**
-1. OIDC (claimants via a customer identity provider, staff via the corporate IdP) and market-scoped officer permissions.
-2. Document upload: object storage, malware scan, signed URLs. Information requests are the natural hook.
-3. Email/SMS delivery as more event consumers; a dead-letter topic for poison messages.
-4. Read models for reporting, fed from events; SQL Server/Postgres instead of SQLite.
-5. Generated TypeScript client from OpenAPI; SSE push instead of polling.
-6. Structured logging, tracing (OpenTelemetry), metrics on outbox lag and consumer lag.
-7. Reassignment and team-lead approval limits (e.g. approvals above a threshold need a second officer).
-8. Data residency and retention per market; PII encryption at rest.
+1. Prove the Kafka path: run the compose broker, add a Testcontainers integration test for producer and consumer, add a dead-letter topic for poison messages (today they are logged and skipped).
+2. OIDC (claimants via a customer identity provider, staff via the corporate IdP) and market-scoped officer permissions.
+3. Document upload: object storage, malware scan, signed URLs. Information requests are the natural hook.
+4. Email/SMS delivery as more event consumers.
+5. Read models for reporting, fed from events; SQL Server/Postgres instead of SQLite.
+6. Generated TypeScript client from OpenAPI; SSE push instead of polling.
+7. Structured logging, tracing (OpenTelemetry), metrics on outbox lag and consumer lag.
+8. Reassignment and team-lead approval limits (e.g. approvals above a threshold need a second officer).
+9. Data residency and retention per market; PII encryption at rest.

@@ -74,15 +74,17 @@ Sections marked **[Candidate]** are for my own review notes. They are deliberate
 ---
 
 ## Candidate verification log
-- Date/time:
-- .NET SDK / runtime: (session 2 used SDK 9.0.320 targeting net8.0, runtime 8.0.33)
-- Node/npm: (session 2: Node 26.12.1)
-- Backend restore/build/run:
-- `dotnet test` result:
-- Frontend npm install/build:
-- Manual test cases (follow README demo script):
-- Issues fixed:
-- Git commit hashes:
+- Date: 2026-11-02 and 2026-11-03 (sessions 3 and 4).
+- .NET SDK / runtime: SDK 9.0.320 targeting net8.0, runtime 8.0.33.
+- Node/npm: Node 26.12.1, npm 11.20.0.
+- Backend restore/build/run: builds clean. `dotnet run` starts on :5080, applies the migration and seeds demo data; `/api/claims` and `/api/dashboard/exposure` returned data.
+- `dotnet test` result: 27 passed, 0 failed (2026-11-02 and again 2026-11-03).
+- Frontend npm install/build: `npm run build` succeeded (2026-11-02 and 2026-11-03).
+- Fresh clone from GitHub (2026-11-02): `npm ci` and build succeeded, 27/27 tests passed (needs long paths on Windows; see README).
+- Manual test cases: officer queue (James, Unassigned tab, 20-day claim flagged red) and team dashboard checked in the browser; every dashboard figure reconciled by hand. **Not yet run by hand:** the full README demo script (submit → pick up → request info → respond → approve → settle, plus a 403/409). Run it once before the walkthrough.
+- Kafka transport: not run (no Docker installed). See ARCHITECTURE §4.
+- Issues fixed: API not running caused UI 500s (no code change); favicon 404; truncated queue search placeholder; wrong `models.ts` path in ARCHITECTURE; outdated `Technical_Walkthrough.docx` removed; README long-path note.
+- Git commit hashes: history starts at `fb09ff4` (scaffold). Run `git log --oneline` for the full list.
 
 ---
 
@@ -103,3 +105,29 @@ Sections marked **[Candidate]** are for my own review notes. They are deliberate
 - UI showed 500s on `/api` calls: the API was not running (the dev-server proxy returns 500 when :5080 is down). Not a code bug.
 - `favicon.ico` 404: added an empty inline icon to `index.html`.
 - Queue search placeholder was truncated: shortened it and added a tooltip.
+
+### Later in session 3
+- Pushed the history to GitHub (`venkateswarlusai8/chubb-claims-management`).
+- **Removed `docs/Technical_Walkthrough.docx`.** It described the session-1 prototype (InMemory/SQL Server, `PATCH /status`, Kafka "not implemented", "has not been compiled or run") and contradicted the actual code and the other docs. `WALKTHROUGH.md` replaces it; the old file stays in git history.
+- Checked every factual claim in `ARCHITECTURE.md` against the code (events, rules, endpoints, error codes, Kafka settings, poll intervals, liability formula, FX). All matched except one wrong file path, which was fixed.
+- Fresh clone from GitHub: 27/27 tests passed and the frontend built. The first clone into a deep Windows folder failed with "Filename too long" on the migration file, so the API had no tables and 10 tests failed. Added a long-path note to the README.
+- Visual Studio created a duplicate `backend/Claims.Api/Claims.Api.sln`. Not committed; `backend/Claims.sln` is the solution to open.
+
+---
+
+## Session 4: Claude Code (Opus), 2026-11-03 (documentation gaps)
+
+### Prompt
+- "Check this project what else pending... check the document part, if required prepare any missing document."
+
+### Gaps found against the brief's walkthrough format, and what was added
+- **Kafka verification wasn't stated plainly.** Docker isn't installed and no test covers the Kafka producer or consumer, so that path has never run against a broker. The docs implied this but never said it. Added an explicit verification status to ARCHITECTURE §4, a Q&A answer in WALKTHROUGH, and made "prove the Kafka path" the first next step in ARCHITECTURE §9.
+- **No system diagram for the presentation.** Added a Mermaid diagram to ARCHITECTURE §3 (UI → REST → modules → SQLite/outbox → in-process or Kafka → notifications).
+- **"Shortcuts under time pressure" were scattered.** Added one table in WALKTHROUGH, each row checked in the code (e.g. `Claim.CanView` lets any officer see any market; poison Kafka messages are logged and skipped).
+- **No prep for the "Your questions" segment.** Added suggested questions, marked as suggestions.
+- Restructured WALKTHROUGH around the brief's four timed segments, with a presentation timing plan and demo fallbacks.
+
+### Left for the candidate
+- [Candidate] My review (above) and [Candidate] What I'd do differently (WALKTHROUGH §3).
+- Total hours spent. The AI had written an unverified time split in ARCHITECTURE §1 ("65% backend, 25% frontend, 10% docs"); it was replaced with measured code size (about 60% backend and tests), because the AI cannot know how the time was spent.
+- Filled the verification log from checks the AI actually ran, and deleted the duplicate `Claims.Api.sln`.
