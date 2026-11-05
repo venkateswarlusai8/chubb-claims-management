@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Diagnostics;
 namespace Claims.Api.Infrastructure.Web;
 
 /// <summary>Maps domain exceptions to RFC 7807 problem responses with a machine-readable <c>code</c>.</summary>
-public sealed class ApiExceptionHandler(IProblemDetailsService problemDetails, ILogger<ApiExceptionHandler> logger) : IExceptionHandler
+public class ApiExceptionHandler(IProblemDetailsService problemDetails, ILogger<ApiExceptionHandler> logger) : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken ct)
     {

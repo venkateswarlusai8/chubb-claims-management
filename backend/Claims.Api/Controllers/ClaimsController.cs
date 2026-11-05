@@ -17,7 +17,7 @@ namespace Claims.Api.Controllers;
 [Authorize]
 [Produces("application/json")]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
-public sealed class ClaimsController(ClaimService claims) : ControllerBase
+public class ClaimsController(ClaimService claims) : ControllerBase
 {
     /// <summary>List claims visible to the caller (claimant: own claims; officer: all), with filters and paging.</summary>
     [HttpGet]

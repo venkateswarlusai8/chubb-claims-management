@@ -7,13 +7,13 @@ using Microsoft.Extensions.Options;
 
 namespace Claims.Api.Services;
 
-public sealed class DashboardOptions
+public class DashboardOptions
 {
     /// <summary>Open claims older than this many days count as SLA breaches.</summary>
     public int SlaDays { get; set; } = 14;
 }
 
-public sealed class FxOptions
+public class FxOptions
 {
     public string ReportingCurrency { get; set; } = "USD";
     /// <summary>Indicative rate: 1 unit of the currency = N units of the reporting currency.</summary>
@@ -25,7 +25,7 @@ public sealed class FxOptions
 /// Prototype computes in memory from the claims table. At scale this becomes a read model
 /// (projected from claim events) or SQL aggregation; the API contract would not change.
 /// </summary>
-public sealed class DashboardService(
+public class DashboardService(
     ClaimsDbContext db,
     IUserDirectory users,
     TimeProvider clock,

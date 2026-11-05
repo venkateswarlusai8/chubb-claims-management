@@ -13,7 +13,7 @@ public interface IUserDirectory
 /// Fixed demo identities. In production this is replaced by the identity provider (OIDC/OAuth2);
 /// the rest of the system only depends on <see cref="Actor"/>.
 /// </summary>
-public sealed class DemoUserDirectory : IUserDirectory
+public class DemoUserDirectory : IUserDirectory
 {
     public IReadOnlyList<Actor> All { get; } =
     [

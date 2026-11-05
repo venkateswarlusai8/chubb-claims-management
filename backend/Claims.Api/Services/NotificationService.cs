@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Claims.Api.Services;
 
-public sealed class NotificationService(ClaimsDbContext db, TimeProvider clock)
+public class NotificationService(ClaimsDbContext db, TimeProvider clock)
 {
     public async Task<NotificationListDto> ListAsync(Actor user, CancellationToken ct)
     {
@@ -42,7 +42,7 @@ public sealed class NotificationService(ClaimsDbContext db, TimeProvider clock)
 /// This is the "receive decisions" path: asynchronous, decoupled from the request that made the change,
 /// and the natural place to add email/SMS/push delivery later.
 /// </summary>
-public sealed class NotificationEventHandler(ClaimsDbContext db, TimeProvider clock) : IClaimEventHandler
+public class NotificationEventHandler(ClaimsDbContext db, TimeProvider clock) : IClaimEventHandler
 {
     public const string ConsumerName = "notifications";
 

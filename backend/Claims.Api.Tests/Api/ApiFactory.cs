@@ -13,7 +13,7 @@ namespace Claims.Api.Tests.Api;
 /// Boots the real API against a throw-away SQLite file with no demo data and background outbox
 /// dispatch disabled, so tests can drive event delivery deterministically.
 /// </summary>
-public sealed class ApiFactory : WebApplicationFactory<Program>
+public class ApiFactory : WebApplicationFactory<Program>
 {
     private readonly string _dbPath = Path.Combine(Path.GetTempPath(), $"claims-tests-{Guid.NewGuid():N}.db");
 

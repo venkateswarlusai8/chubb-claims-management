@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Claims.Api.Infrastructure.Messaging;
 
-public sealed class MessagingOptions
+public class MessagingOptions
 {
     /// <summary>"InProcess" (default, no infrastructure needed) or "Kafka".</summary>
     public string Transport { get; set; } = "InProcess";
@@ -19,7 +19,7 @@ public sealed class MessagingOptions
     public bool UsesKafka => string.Equals(Transport, "Kafka", StringComparison.OrdinalIgnoreCase);
 }
 
-public sealed class KafkaOptions
+public class KafkaOptions
 {
     public string BootstrapServers { get; set; } = "localhost:9092";
     public string Topic { get; set; } = "claims.claim-events.v1";
@@ -33,7 +33,7 @@ public interface IClaimEventHandler
 }
 
 /// <summary>Deserialises an event and runs every registered handler in its own DI scope.</summary>
-public sealed class ClaimEventDispatcher(IServiceScopeFactory scopes)
+public class ClaimEventDispatcher(IServiceScopeFactory scopes)
 {
     public async Task DispatchAsync(string type, string payload, CancellationToken ct)
     {
@@ -50,14 +50,14 @@ public interface IEventPublisher
 }
 
 /// <summary>Delivers events straight to local handlers. Same semantics as Kafka minus the broker.</summary>
-public sealed class InProcessEventPublisher(ClaimEventDispatcher dispatcher) : IEventPublisher
+public class InProcessEventPublisher(ClaimEventDispatcher dispatcher) : IEventPublisher
 {
     public Task PublishAsync(OutboxMessage message, CancellationToken ct) =>
         dispatcher.DispatchAsync(message.Type, message.Payload, ct);
 }
 
 /// <summary>Publishes to a Kafka topic, keyed by claim id so all events for a claim land on one partition in order.</summary>
-public sealed class KafkaEventPublisher(IOptions<MessagingOptions> options) : IEventPublisher, IDisposable
+public class KafkaEventPublisher(IOptions<MessagingOptions> options) : IEventPublisher, IDisposable
 {
     private readonly Lazy<IProducer<string, string>> _producer = new(() =>
         new ProducerBuilder<string, string>(new ProducerConfig
@@ -91,7 +91,7 @@ public sealed class KafkaEventPublisher(IOptions<MessagingOptions> options) : IE
 }
 
 /// <summary>Reads unpublished outbox rows in order and hands them to the configured publisher.</summary>
-public sealed class OutboxProcessor(
+public class OutboxProcessor(
     IServiceScopeFactory scopes,
     IEventPublisher publisher,
     IOptions<MessagingOptions> options,
@@ -144,7 +144,7 @@ public sealed class OutboxProcessor(
     }
 }
 
-public sealed class OutboxBackgroundService(
+public class OutboxBackgroundService(
     OutboxProcessor processor,
     IOptions<MessagingOptions> options,
     ILogger<OutboxBackgroundService> logger) : BackgroundService
@@ -176,7 +176,7 @@ public sealed class OutboxBackgroundService(
 }
 
 /// <summary>When Transport=Kafka, consumes the claim events topic and runs local handlers (e.g. notifications).</summary>
-public sealed class KafkaConsumerBackgroundService(
+public class KafkaConsumerBackgroundService(
     ClaimEventDispatcher dispatcher,
     IOptions<MessagingOptions> options,
     ILogger<KafkaConsumerBackgroundService> logger) : BackgroundService

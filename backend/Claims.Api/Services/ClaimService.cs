@@ -9,7 +9,7 @@ namespace Claims.Api.Services;
 /// Application service for the Claims module: loads the aggregate, invokes the domain method,
 /// saves (which also writes outbox events) and maps to DTOs. Business rules live in <see cref="Claim"/>.
 /// </summary>
-public sealed class ClaimService(ClaimsDbContext db, TimeProvider clock)
+public class ClaimService(ClaimsDbContext db, TimeProvider clock)
 {
     private DateTime Now => clock.GetUtcNow().UtcDateTime;
 

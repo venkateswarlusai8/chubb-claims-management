@@ -49,4 +49,4 @@ public static class ClaimActions
 }
 
 /// <summary>The authenticated caller, as seen by the domain.</summary>
-public sealed record Actor(string Id, string Name, string Email, UserRole Role);
+public record Actor(string Id, string Name, string Email, UserRole Role);

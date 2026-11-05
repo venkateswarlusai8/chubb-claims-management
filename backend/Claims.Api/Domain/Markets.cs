@@ -1,6 +1,6 @@
 namespace Claims.Api.Domain;
 
-public sealed record MarketInfo(string Code, string Name, string Currency);
+public record MarketInfo(string Code, string Name, string Currency);
 
 /// <summary>
 /// The six APAC markets. The brief does not name them, so this list is an assumption.

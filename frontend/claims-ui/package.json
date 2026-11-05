@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "ng serve --host 0.0.0.0",
+    "start:iis": "ng serve --host 0.0.0.0 --proxy-config proxy.iis.conf.json",
     "build": "ng build"
   },
   "dependencies": {

@@ -66,6 +66,7 @@ export class NotificationsComponent {
   }
 
   protected markAll(): void {
+    console.log("Marking all notifications as read");
     this.api.markAllNotificationsRead().subscribe(() => this.load());
   }
 }

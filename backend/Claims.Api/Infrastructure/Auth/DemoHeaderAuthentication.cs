@@ -12,7 +12,7 @@ namespace Claims.Api.Infrastructure.Auth;
 /// It produces a normal <see cref="ClaimsPrincipal"/>, so controllers use standard
 /// <c>[Authorize(Roles = ...)]</c> checks and swapping in JWT bearer (OIDC) is a registration change only.
 /// </summary>
-public sealed class DemoHeaderAuthenticationHandler(
+public class DemoHeaderAuthenticationHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory logger,
     UrlEncoder encoder,

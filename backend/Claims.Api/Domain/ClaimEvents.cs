@@ -18,37 +18,37 @@ public abstract record ClaimEventBase(Guid ClaimId, string ClaimNumber, DateTime
     public Guid EventId { get; init; } = Guid.NewGuid();
 }
 
-public sealed record ClaimSubmitted(
+public record ClaimSubmitted(
     Guid ClaimId, string ClaimNumber, DateTime OccurredAt,
     string ClaimantId, string MarketCode, ClaimType ClaimType, decimal EstimatedAmount, string Currency)
     : ClaimEventBase(ClaimId, ClaimNumber, OccurredAt);
 
-public sealed record ClaimAssigned(
+public record ClaimAssigned(
     Guid ClaimId, string ClaimNumber, DateTime OccurredAt,
     string ClaimantId, string OfficerId, string OfficerName)
     : ClaimEventBase(ClaimId, ClaimNumber, OccurredAt);
 
-public sealed record InformationRequested(
+public record InformationRequested(
     Guid ClaimId, string ClaimNumber, DateTime OccurredAt,
     string ClaimantId, Guid RequestId, string Question)
     : ClaimEventBase(ClaimId, ClaimNumber, OccurredAt);
 
-public sealed record InformationProvided(
+public record InformationProvided(
     Guid ClaimId, string ClaimNumber, DateTime OccurredAt,
     string? OfficerId, Guid RequestId)
     : ClaimEventBase(ClaimId, ClaimNumber, OccurredAt);
 
-public sealed record ClaimApproved(
+public record ClaimApproved(
     Guid ClaimId, string ClaimNumber, DateTime OccurredAt,
     string ClaimantId, decimal ApprovedAmount, string Currency)
     : ClaimEventBase(ClaimId, ClaimNumber, OccurredAt);
 
-public sealed record ClaimRejected(
+public record ClaimRejected(
     Guid ClaimId, string ClaimNumber, DateTime OccurredAt,
     string ClaimantId, string Reason)
     : ClaimEventBase(ClaimId, ClaimNumber, OccurredAt);
 
-public sealed record ClaimSettled(
+public record ClaimSettled(
     Guid ClaimId, string ClaimNumber, DateTime OccurredAt,
     string ClaimantId, decimal SettledAmount, string Currency)
     : ClaimEventBase(ClaimId, ClaimNumber, OccurredAt);
